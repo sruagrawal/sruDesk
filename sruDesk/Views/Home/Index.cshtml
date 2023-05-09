@@ -1,8 +1,152 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@model Appointment
+
+@{
+    ViewData["Title"] = "Incoming Appointment Requests";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<head>
+    <link rel="stylesheet" href="~/lib/fontawesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+</head>
+<h1>
+    Incoming Appointment Requests
+</h1>
+<body>
+    <div>
+        <div class="container">
+            <div class="card">
+                <div class="info_label">
+                    Request created on @Model.CreatedDateTime
+                </div>
+                <div class="row user">
+                    <i class="fa-solid fa-user"></i>@Model.User.FirstName @Model.User.LastName
+                </div>
+                <div class="row dog">
+                    <i class="fa-solid fa-paw"></i>
+                    <div class="dog-text">
+                        <div>@Model.Animal.FirstName</div>
+                        <div class="subtitle">@Model.Animal.Species</div>
+                    </div>
+                </div>
+                <div class="services">
+                    <div>Requested Services:</div>
+                    <div>@Model.Type</div>
+                </div>
+
+                <div class="card-subtitle">Requested Time:</div>
+                <div class="card-text">@Model.RequestedDateTime</div>
+                <div class="btns">
+                    <button type="button" onClick="onAccept()">Accept Requested Time</button>
+                    <input id="date_selector" type="datetime-local" onchange="selectDate()" />
+                    <button id="rejectBtn" type="button" onClick="onReject()" disabled>Suggest New Time</button>
+                </div>
+
+                <div class="row" id="alert-label"></div>
+            </div>
+            <div class="nav">
+                @if (ViewBag.PreviousIndex != null)
+                {
+                    @Html.ActionLink("Previous", "Index", new { index = ViewBag.PreviousIndex }, new { @class = "btn btn-primary" })
+                }
+                @if (ViewBag.NextIndex != null)
+                {
+                    @Html.ActionLink("Next", "Index", new { index = ViewBag.NextIndex }, new { @class = "btn btn-primary" })
+                }
+            </div>
+        </div>
+    </div>
+</body>
+
+<style>
+
+    .row, .card-subtitle {
+        padding-top: 10px;
+    }
+
+    i {
+        padding-top: 4px;
+        padding-right: 5px;
+    }
+
+    .container {
+        justify-content: center;
+        width: 75%;
+    }
+
+    .card {
+        align-items: center;
+        padding: 5%;
+    }
+
+    .btns {
+        padding-top: 25px;
+        display: block;
+    }
+
+    .dog {
+        display: flex;
+        align-items: center;
+    }
+
+    .services {
+        padding-top: 10px;
+        display: block;
+        text-align: center;
+    }
+
+    .dog-text {
+        text-align: center;
+    }
+
+    .subtitle {
+        font-size: small;
+    }
+
+    #alert-label {
+        color: limegreen;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .nav {
+        align-content: center;
+    }
+
+    .info_label {
+        font-size: small;
+    }
+
+</style>
+
+<script>
+    function onAccept() {
+        const label = document.getElementById('alert-label');
+        label.innerHTML = "Appointment has been accepted!";
+        disableButtons();
+    }
+
+    function onReject() {
+        const label = document.getElementById('alert-label');
+        label.innerHTML = "New appointment time has been requested!";
+        disableButtons();
+    }
+
+    function disableButtons() {
+        const buttons = document.getElementsByTagName("button");
+        for (const button of buttons) {
+            button.disabled = true;
+        }
+        document.getElementById("date_selector").disabled = true;
+    }
+
+    function selectDate() {
+        const datePicker = document.getElementById("date_selector").value;
+        console.log(datePicker);
+        if (datePicker) {
+            document.getElementById("rejectBtn").disabled = false;
+        }
+    }
+</script>
